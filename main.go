@@ -261,7 +261,7 @@ func main() {
 	router.HandleFunc("/api/tasks/{id}", DeleteTask).Methods("DELETE")
 
 	// Enable CORS
-	c := cors.Default()
+	c := cors.AllowAll()
 	handler := c.Handler(router)
 
 	port := os.Getenv("PORT")
