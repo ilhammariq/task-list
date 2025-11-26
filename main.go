@@ -80,7 +80,7 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 	tasks := []Task{}
 	for rows.Next() {
 		var task Task
-		err := rows.Scan(&task.ID, &task.TaskList, &task.Date, &task.Notes)
+		err := rows.Scan(&task.ID, pq.Array(&task.TaskList), &task.Date, &task.Notes)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
@@ -108,7 +108,7 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 
 	var task Task
 	query := "SELECT id, tasklist, tanggal, notes FROM tasks WHERE id = $1"
-	err = db.QueryRow(query, id).Scan(&task.ID, &task.TaskList, &task.Date, &task.Notes)
+	err = db.QueryRow(query, id).Scan(&task.ID, pq.Array(&task.TaskList), &task.Date, &task.Notes)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			w.WriteHeader(http.StatusNotFound)
@@ -179,7 +179,7 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 	// Get current task
 	var task Task
 	query := "SELECT id, tasklist, tanggal, notes FROM tasks WHERE id = $1"
-	err = db.QueryRow(query, id).Scan(&task.ID, &task.TaskList, &task.Date, &task.Notes)
+	err = db.QueryRow(query, id).Scan(&task.ID, pq.Array(&task.TaskList), &task.Date, &task.Notes)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			w.WriteHeader(http.StatusNotFound)
