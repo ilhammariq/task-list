@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
+	"github.com/rs/cors"
 )
 
 type Task struct {
@@ -259,11 +260,15 @@ func main() {
 	router.HandleFunc("/api/tasks/{id}", UpdateTask).Methods("PUT")
 	router.HandleFunc("/api/tasks/{id}", DeleteTask).Methods("DELETE")
 
+	// Enable CORS
+	c := cors.Default()
+	handler := c.Handler(router)
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
 	fmt.Printf("Server running on port %s\n", port)
-	http.ListenAndServe(":"+port, router)
+	http.ListenAndServe(":"+port, handler)
 }
